@@ -65,15 +65,15 @@ class SubItemButton extends Base {
 	public function getBodyContent($data) {
 		$button = new Button();
 		$button->setPresenter($this->grid->presenter)
-		    ->setType('btn-info btn-xs')
-		    ->setClassName('mesour-ajax')
-		    ->addAttribute('href', $this->grid['subitem']->link('toggleItem!', array($this->option[self::KEY], $this->option[self::NAME])));
+				->setType('btn-info btn-xs')
+				->setClassName('mesour-ajax')
+				->addAttribute('href', $this->grid['subitem']->link('toggleItem!', array($this->option[self::KEY], $this->option[self::NAME])));
 		if($this->option[self::OPENED]) {
-			$button->setIcon('glyphicon-minus')
-			    ->setTitle('Disable sub item');
+			$button->setIcon('glyphicon-chevron-down')
+					->setTitle('Hide sublist');
 		} else {
-			$button->setIcon('glyphicon-plus')
-			    ->setTitle('Enable sub item');
+			$button->setIcon('glyphicon-chevron-right')
+					->setTitle('Show sublist');
 		}
 		return $button;
 	}
