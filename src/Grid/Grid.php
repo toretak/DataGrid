@@ -17,32 +17,13 @@ namespace Mesour\DataGrid;
 class Grid extends ExtendedGrid
 {
 
-	private $colapseExpandAll = false;
-
 	/**
 	 * @return Extensions\SubItem
 	 */
 	public function enableSubItems()
 	{
-		$this->hasSubItems = true;
 		new Extensions\SubItem($this, 'subitem', $this->page_limit);
 		return $this['subitem'];
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setExpandAll($name)
-	{
-		$this->colapseExpandAll = $name;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasSubItems()
-	{
-		return $this->colapseExpandAll != false;
 	}
 
 	/**
@@ -54,11 +35,10 @@ class Grid extends ExtendedGrid
 			return false;
 		}
 
-		unset($this['subitem']->settings[$this->colapseExpandAll]);
-		$from = $this->getPaginator()->getPage();
-		$items = $from + $this->getPaginator()->getItemsPerPage();
-		for ($i = $from; $i < $items; $i++) {
-			$this['subitem']->settings[$this->colapseExpandAll][] = $i;
+		unset($this['subitem']->settings[$this->subitemsName]);
+		$items = $this->getPaginator()->getItemsPerPage();
+		for ($i = 0; $i < $items; $i++) {
+			$this['subitem']->settings[$this->subitemsName][] = $i;
 		}
 		$this->redrawControl();
 		$this->presenter->redrawControl();
@@ -69,10 +49,10 @@ class Grid extends ExtendedGrid
 	 */
 	public function handleColapseAllSubItems()
 	{
-		if (!isset($this['subitem'], $this['subitem']->settings[$this->colapseExpandAll])) {
+		if (!isset($this['subitem'], $this['subitem']->settings[$this->subitemsName])) {
 			return false;
 		}
-		unset($this['subitem']->settings[$this->colapseExpandAll]);
+		unset($this['subitem']->settings[$this->subitemsName]);
 		$this->redrawControl();
 		$this->presenter->redrawControl();
 

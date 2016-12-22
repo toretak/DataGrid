@@ -12,9 +12,9 @@ namespace Mesour\DataGrid;
 
 use Mesour\DataGrid\Column\IColumn;
 use Nette\ComponentModel\IContainer,
-    Nette\Application\UI\Control,
-    Mesour\DataGrid\Render\IRendererFactory,
-    Mesour\DataGrid\Render\Renderer;
+	Nette\Application\UI\Control,
+	Mesour\DataGrid\Render\IRendererFactory,
+	Mesour\DataGrid\Render\Renderer;
 
 /**
  * @author mesour <matous.nemec@mesour.com>
@@ -23,7 +23,8 @@ use Nette\ComponentModel\IContainer,
  * @property-read IRendererFactory $rendererFactory
  * @property-read IDataSource $dataSource
  */
-abstract class BaseGrid extends Control {
+abstract class BaseGrid extends Control
+{
 
 	/**
 	 * DataGrid name
@@ -81,32 +82,42 @@ abstract class BaseGrid extends Control {
 
 	private $primary_key = NULL;
 
-	public function __construct(IContainer $parent = NULL, $name = NULL) {
+	/**
+	 * @var bool
+	 */
+	public $subitemsName = false;
+
+	public function __construct(IContainer $parent = NULL, $name = NULL)
+	{
 		parent::__construct($parent, $name);
 		$this->name = $name;
 		new Extensions\Translator($this, 'translator');
 		$this["translator"]->setLocale("en");
 	}
 
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 		$this->grid_name = NULL;
 		return $this;
 	}
 
-	static public function disableJsDraw() {
+	static public function disableJsDraw()
+	{
 		self::$js_draw = FALSE;
 	}
 
-	static public function disableCssDraw() {
+	static public function disableCssDraw()
+	{
 		self::$css_draw = FALSE;
 	}
 
 	/**
 	 * @return String
 	 */
-	public function getGridName() {
-		if(!$this->grid_name) {
+	public function getGridName()
+	{
+		if (!$this->grid_name) {
 			$this->grid_name = str_replace(':', '-', $this->presenter->getName() . $this->name);
 		}
 		return $this->grid_name;
@@ -115,7 +126,8 @@ abstract class BaseGrid extends Control {
 	/**
 	 * @return Array
 	 */
-	public function getColumns() {
+	public function getColumns()
+	{
 		return $this->column_arr;
 	}
 
@@ -123,8 +135,9 @@ abstract class BaseGrid extends Control {
 	 * @return IDataSource
 	 * @throws Grid_Exception
 	 */
-	public function getDataSource() {
-		if(!$this->dataSource) {
+	public function getDataSource()
+	{
+		if (!$this->dataSource) {
 			throw new Grid_Exception('Data source is not set. Use setDataSource.');
 		}
 		return $this->dataSource;
@@ -135,7 +148,8 @@ abstract class BaseGrid extends Control {
 	 *
 	 * @return Integer
 	 */
-	public function getTotalCount() {
+	public function getTotalCount()
+	{
 		if ($this->total_count === FALSE) {
 			$this->setTotalCount();
 		}
@@ -147,18 +161,21 @@ abstract class BaseGrid extends Control {
 	 * @param null $customDir - Set custom directory (directory where you have translates from grid)
 	 * @throws Grid_Exception
 	 */
-	public function setLocale($languageFile, $customDir = null) {
+	public function setLocale($languageFile, $customDir = null)
+	{
 		$this["translator"]->setLocale($languageFile, $customDir);
 		return $this;
 	}
 
-	public function fetchAll() {
+	public function fetchAll()
+	{
 		return $this->getDataSource()->fetchAll();
 	}
 
-	public function getRealColumnNames($full_data = array()) {
+	public function getRealColumnNames($full_data = array())
+	{
 		if (is_null($this->real_column_names)) {
-			if(!empty($full_data)) {
+			if (!empty($full_data)) {
 				$x = (array) reset($full_data);
 				$this->real_column_names = array_keys($x);
 			} else {
@@ -168,7 +185,8 @@ abstract class BaseGrid extends Control {
 		return $this->real_column_names;
 	}
 
-	public function hasEmptyData($full_data = array()) {
+	public function hasEmptyData($full_data = array())
+	{
 		$column_names = $this->getRealColumnNames($full_data);
 		return empty($column_names) ? TRUE : FALSE;
 	}
@@ -176,17 +194,19 @@ abstract class BaseGrid extends Control {
 	/**
 	 * @return \Nette\Utils\Paginator|NULL
 	 */
-	public function getPaginator() {
-		if(isset($this['pager'])) {
+	public function getPaginator()
+	{
+		if (isset($this['pager'])) {
 			$this->beforeRender();
 			return $this['pager']->getPaginator();
 		}
 		return NULL;
 	}
 
-	public function setDataSource(IDataSource & $dataSource) {
+	public function setDataSource(IDataSource & $dataSource)
+	{
 		$this->dataSource = $dataSource;
-		if(is_null($this->primary_key)) {
+		if (is_null($this->primary_key)) {
 			$this->primary_key = $this->dataSource->getPrimaryKey();
 		} else {
 			$this->dataSource->setPrimaryKey($this->primary_key);
@@ -194,44 +214,51 @@ abstract class BaseGrid extends Control {
 		return $this;
 	}
 
-	public function setPrimaryKey($primary_key) {
+	public function setPrimaryKey($primary_key)
+	{
 		$this->primary_key = $primary_key;
-		if($this->dataSource) {
+		if ($this->dataSource) {
 			$this->dataSource->setPrimaryKey($primary_key);
 		}
 		return $this;
 	}
 
-	public function getPrimaryKey() {
+	public function getPrimaryKey()
+	{
 		return $this->primary_key;
 	}
 
-	public function isSubGrid() {
+	public function isSubGrid()
+	{
 		return $this->parent instanceof self;
 	}
 
 	/**
 	 * @return IDataSource
 	 */
-	public function getCurrentDataSource() {
+	public function getCurrentDataSource()
+	{
 		$this->beforeRender();
 		return $this->getDataSource();
 	}
 
-	public function getRendererFactory() {
+	public function getRendererFactory()
+	{
 		return $this->rendererFactory;
 	}
 
-	public function setRendererFactory(IRendererFactory $rendererFactory) {
+	public function setRendererFactory(IRendererFactory $rendererFactory)
+	{
 		$this->rendererFactory = $rendererFactory;
 	}
 
 	abstract public function render();
 
-	protected function getLineId($data) {
-		if(!isset($data[$this->getPrimaryKey()])) {
+	protected function getLineId($data)
+	{
+		if (!isset($data[$this->getPrimaryKey()])) {
 			$text = '';
-			if(count($this->getDataSource()->getAllRelated()) > 0) {
+			if (count($this->getDataSource()->getAllRelated()) > 0) {
 				$text = ' Maybe must specify your columns for select if use relations.';
 			}
 			throw new Grid_Exception('Primary key "' . $this->getPrimaryKey() . '" does not exists in data. For change use setPrimaryKey on DataSource.' . $text);
@@ -242,7 +269,8 @@ abstract class BaseGrid extends Control {
 	/**
 	 * Must called before create body
 	 */
-	protected function beforeCreate() {
+	protected function beforeCreate()
+	{
 		foreach ($this->column_arr as $column) {
 			$column->setGridComponent($this);
 			if ($column instanceof Column\BaseOrdering && $this['ordering']->isDisabled()) {
@@ -255,22 +283,25 @@ abstract class BaseGrid extends Control {
 	/**
 	 * Must called before render header
 	 */
-	protected function beforeRender() {
+	protected function beforeRender()
+	{
 		$this->template->locale = $this["translator"]->getLocale();
 	}
 
-	protected function updateCounts() {
+	protected function updateCounts()
+	{
 		return $this->count = $this->getDataSource()->count();
 	}
 
 	/**
 	 * Check if columns are empty, if empty, set default Text columns by DB
 	 */
-	protected function checkEmptyColumns() {
+	protected function checkEmptyColumns()
+	{
 		if (empty($this->column_arr)) {
 			foreach ($this->getRealColumnNames() as $key) {
 				$column = new Column\Text(array(
-				    Column\Text::ID => $key,
+					Column\Text::ID => $key,
 				));
 				$column->setGridComponent($this);
 				$this->column_arr[] = $column;
@@ -282,7 +313,8 @@ abstract class BaseGrid extends Control {
 	 * @param IColumn $column
 	 * @return IColumn
 	 */
-	protected function addColumn(IColumn $column) {
+	protected function addColumn(IColumn $column)
+	{
 		$this->column_arr[] = $column;
 		return $column;
 	}
@@ -290,7 +322,8 @@ abstract class BaseGrid extends Control {
 	/**
 	 * Set total count of data grid
 	 */
-	private function setTotalCount() {
+	private function setTotalCount()
+	{
 		$this->total_count = $this->getDataSource()->getTotalCount();
 	}
 
@@ -299,16 +332,34 @@ abstract class BaseGrid extends Control {
 	 * @return Renderer
 	 * @throws Grid_Exception
 	 */
-	public function createBody($table_class = 'table') {
-		if(!$this->rendererFactory) {
+	public function createBody($table_class = 'table')
+	{
+		if (!$this->rendererFactory) {
 			throw new Grid_Exception('RendererFactory is not set.');
 		}
 		$this->beforeCreate();
 		$table = $this->rendererFactory->createTable();
 		$table->setAttributes(array(
-		    'class' => $table_class
+			'class' => $table_class
 		));
 		$this->beforeRender();
 		return $table;
 	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setExpandAll($name)
+	{
+		$this->subitemsName = $name;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasSubItems()
+	{
+		return $this->subitemsName != false;
+	}
+
 }
